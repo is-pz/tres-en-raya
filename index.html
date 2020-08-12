@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon"  type="image/png" href="img/numeral.png">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/package/dist/sweetalert2.min.css">
+    <title>Juego Del Gato</title>
+</head>
+<body>
+    <div id="container">
+
+        <h1 align="center">Juego Del Gato</h1>
+
+        <div id="puntajes" align="center">
+
+            <div id="jUsuario" align="center">
+                <img src="img/Usuario.png" >
+                <p id="jugador"> Puntos Usuario: 0</p>
+            </div>
+
+            <div id="jMaquina" align="center">
+                <img src="img/Maquina.png" >
+                <p id="maquina"> Puntos Máquina: 0</p>
+            </div>
+
+        </div>
+
+        <div>
+            <table id="tablero" cellspacing="0" align="center">
+                <tr>
+                    <td id="c1" class="celda" align="center"> <img src="" id= "imagen1"> </td>
+                    <td id="c2" class="celda" align="center"> <img src="" id= "imagen2"> </td>
+                    <td id="c3" class="celda" align="center"> <img src="" id= "imagen3"> </td>
+                </tr>
+                <tr>
+                    <td id="c4" class="celda" align="center"> <img src="" id= "imagen4"> </td>
+                    <td id="c5" class="celda" align="center"> <img src="" id= "imagen5"> </td>
+                    <td id="c6" class="celda" align="center"> <img src="" id= "imagen6"> </td>
+                </tr>
+                <tr>
+                    <td id="c7" class="celda" align="center"> <img src="" id= "imagen7"> </td>
+                    <td id="c8" class="celda" align="center"> <img src="" id= "imagen8"> </td>
+                    <td id="c9" class="celda" align="center"> <img src="" id= "imagen9"> </td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <p id="turno" align="center"> Tu turno de marcar... </p>
+        </div>
+    </div>
+    <script src="css/package/dist/sweetalert2.all.min.js"></script>
+    <script src="js/index.js"></script> 
+</body>
+</html>
