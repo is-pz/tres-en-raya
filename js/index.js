@@ -1,17 +1,14 @@
-var turno = 0;
-var arregloTablero = new Array(9);
-var celdas = document.getElementsByClassName("celda");
-var movimientoMaquina;
-var letraX = "X", letraO = "O";
-var imagenGato;
-var urlImagenUsuario = "img/Usuario.png";
-var urlImagenMaquina = "img/Maquina.png";
-var partidasGanadasUsuario = 0, partidasGanadasMaquina = 0;
-var Ganador = false, partidaEmpatada = false;
-var Nombre;
-var soundGameOver = new Audio('sounds/Pacman(GameOver).mp3');
-var soundMoneda = new Audio('sounds/SuperMarioBrosEfectoMoneda.mp3');
-var soundEmpate = new Audio('sounds/MarioBrosmuere.mp3');
+let turno = 0;
+let arregloTablero = new Array(9);
+let celdas = document.querySelectorAll(".celda");
+let movimientoMaquina;
+let letraX = "X", letraO = "O";
+let imagenGatoParaTablero;
+let urlImagenUsuario = "img/Usuario.png", urlImagenMaquina = "img/Maquina.png";
+let partidasGanadasUsuario = 0, partidasGanadasMaquina = 0;
+let Ganador = false, partidaEmpatada = false;
+let nickNameUser;
+let soundGameOver = new Audio('sounds/Pacman(GameOver).mp3'), soundWin = new Audio('sounds/SuperMarioBrosEfectoMoneda.mp3'), soundEmpate = new Audio('sounds/MarioBrosmuere.mp3');
 
 //Funcion que reinicia el tablero
 function reiniciarJuego(){
@@ -19,16 +16,30 @@ function reiniciarJuego(){
     turno = 0;
     Ganador = false;
     partidaEmpatada = false;
-    var contadorCeldas = 0;
+    let contadorCeldas = 0;
     //Permite agregar nuevamente el evento escucha del tablero ademas de que regresa el color original y quita las imagenes
     while(contadorCeldas < celdas.length){
-        arregloTablero[contadorCeldas] = " ";
+        //Se limpia el arreglo
+        arregloTablero[contadorCeldas] = "";
+        //Se añade de nuevo el evento a las celdad
         celdas[contadorCeldas].addEventListener("click", gato);
+        //Regresa al color de fondo
         celdas[contadorCeldas].style.background = "#00a896";
-        imagenGato = document.getElementById("imagen"+ (contadorCeldas + 1));
-        imagenGato.removeAttribute("src");
+        //Elimina las images del tablero
+        document.getElementById("imagen"+ (contadorCeldas + 1)).removeAttribute("src");
         contadorCeldas++;
     }
+}
+
+//Coloca el nuemero total de partidad ganadas
+function colocaPartidasGandasPorUsuario(){
+    let text = "";
+    if (nickNameUser == null || nickNameUser == ""){
+        text = "Puntos Desconocido : " + partidasGanadasUsuario;
+    }else{
+        text = "Puntos "+ nickNameUser +": " + partidasGanadasUsuario;
+    }  
+    document.getElementById("jugador").innerHTML = text;
 }
 
 //Funcion que verificar si hay un hanador y tambien verifica si hay un empate
@@ -45,19 +56,15 @@ function ganador(letra){
         if(letra == letraX){
             Swal.fire(
                 'Ganador!',
-                Nombre +' Haz Ganado!',
+                nickNameUser +' Haz Ganado!',
                 'success'
             );
             turno = 0;
-            soundMoneda.play();
+            soundWin.play();
             Ganador = true;
             setTimeout(reiniciarJuego, 300);
             partidasGanadasUsuario++;
-            if (Nombre == null || Nombre == ""){
-                document.getElementById("jugador").innerHTML = "Puntos Desconocido : " + partidasGanadasUsuario;
-            }else{
-                document.getElementById("jugador").innerHTML = "Puntos "+ Nombre +": " + partidasGanadasUsuario;
-            }    
+            colocaPartidasGandasPorUsuario();
         }else if(letra == letraO){
             Swal.fire(
                 'Ganador!',
@@ -83,23 +90,25 @@ function ganador(letra){
         setTimeout(reiniciarJuego, 300);
     }
 }
+//Marca la casilla con la imagen y color para la maquina
+function marcaCasillaMaquina(celdaSeleccionada){
+    let celdaAOcupar = document.getElementById("c" + celdaSeleccionada); 
+    document.getElementById("turno").innerHTML ="Tú turno de marcar...";
+    imagenGatoParaTablero = document.getElementById("imagen" + celdaSeleccionada );
+    imagenGatoParaTablero.src = urlImagenMaquina; 
+    celdaAOcupar.style.background="#354f52";
+    celdaAOcupar.removeEventListener("click",gato);
+    arregloTablero[celdaSeleccionada - 1] = letraO;
+    turno++;
+    ganador(letraO);
+}
 
 //Verifica que la celda seleccionada por la maquina este disponible
 function celdaVacia(celdaSeleccionada){
-    var celdaAOcupar = document.getElementById("c" + celdaSeleccionada); 
     if(arregloTablero[celdaSeleccionada - 1] == letraX || arregloTablero[celdaSeleccionada - 1] == letraO){
-        movimientoMaquina = Math.floor(Math.random() * 9) + 1;
-        celdaVacia(movimientoMaquina);  
-        
+        maquina();
     }else{
-        document.getElementById("turno").innerHTML ="Tú turno de marcar...";
-        imagenGato = document.getElementById("imagen" + celdaSeleccionada );
-        imagenGato.src = urlImagenMaquina; 
-        celdaAOcupar.style.background="#354f52";
-        celdaAOcupar.removeEventListener("click",gato);
-        arregloTablero[celdaSeleccionada - 1] = letraO;
-        turno++;
-        ganador(letraO);
+        marcaCasillaMaquina(celdaSeleccionada);
     }
 }
 
@@ -110,16 +119,10 @@ function maquina(){
         celdaVacia(movimientoMaquina);
     }
 }
-
-//Funcion para detectar la celda seleccionada por el usuario y marcarla 
-function gato(evento){
-    document.getElementById("turno").innerHTML ="Tú turno de marcar...";
-    var celda = evento.target;
-    var idCelda = evento.target.id;
-    var posicionMarcada = idCelda[1]-1;
-    document.getElementById("turno").innerHTML ="Turno de la maquina de marcar...";
-    imagenGato = document.getElementById("imagen"+ (posicionMarcada + 1));
-    imagenGato.src = urlImagenUsuario; 
+//Marca la casilla con la imagen y color para el usuario
+function marcarCasillaUsuario(celda, posicionMarcada){
+    imagenGatoParaTablero = document.getElementById("imagen"+ (posicionMarcada + 1));
+    imagenGatoParaTablero.src = urlImagenUsuario; 
     arregloTablero[posicionMarcada] = letraX;
     celda.style.background = "#05668d";
     celda.removeEventListener("click",gato);
@@ -127,28 +130,37 @@ function gato(evento){
     ganador(letraX);
     setTimeout(maquina, 400);
 }
+
+//Funcion para detectar la celda seleccionada por el usuario y marcarla 
+function gato(evento){
+    document.getElementById("turno").innerHTML ="Tú turno de marcar...";
+    let celda = evento.target;
+    let idCelda = evento.target.id;
+    let posicionMarcada = idCelda[1]-1;
+    document.getElementById("turno").innerHTML ="Turno de la maquina de marcar...";
+    marcarCasillaUsuario(celda, posicionMarcada)
+}
+
 //Funcion para agregar el evento de escucha a las celdas del tablero
 function cargarJuego(){
-    var contadorCeldas = 0;
+    let contadorCeldas = 0;
     while(contadorCeldas<celdas.length){
         celdas[contadorCeldas].addEventListener("click", gato);
         contadorCeldas++;
     }
 }
 
-//Funcion para pedir el nombre del usuario
+//Funcion para pedir el nickNameUser del usuario
 (async () => {
-    var { value: nombreUsaurio } = await Swal.fire({
+    let { value: nickNameIngresado } = await Swal.fire({
       title: 'Ingrese su nombre',
       input: 'text',
       showCancelButton: false,
     })
-    if (nombreUsaurio) {
-        Nombre = nombreUsaurio;
-        document.getElementById("jugador").innerHTML = "Puntos "+ nombreUsaurio +": 0";
-    }else{
-        document.getElementById("jugador").innerHTML = "Puntos Desconocido : 0";
+    if (nickNameIngresado) {
+        nickNameUser = nickNameIngresado;
     }    
+    colocaPartidasGandasPorUsuario();
 })()
 
 //Funcion que permite inicialiar la escucha de los eventos del tablero
