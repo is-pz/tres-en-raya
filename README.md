@@ -1,4 +1,4 @@
-# Juego de gato o tres en raya
+# Juego de tres en línea
 Juego del gato: usuario vs pc <br/>
 
 ## Uso
